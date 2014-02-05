@@ -78,15 +78,23 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             TextField {
+                id: nameField
+
                 Layout.fillWidth: true
                 focus: true
+
+                Keys.onReturnPressed: {
+                    addStudentWindow.visible = true;
+                }
             }
 
             Button {
+                id: btnAdd
+
                 text: "Dodaj"
 
                 onClicked: {
-                    addStudentWindow.visible = true
+                    addStudentWindow.visible = true;
                 }
             }
         }

@@ -35,7 +35,11 @@ Window {
                 placeholderText: "Imię"
 
                 onTextChanged: {
-                    btnAdd.enabled = Student.checkEmpty();
+                    btnAdd.enabled = Student.notEmpty();
+                }
+
+                Keys.onReturnPressed: {
+                    lastName.focus = true;
                 }
             }
 
@@ -47,7 +51,11 @@ Window {
                 placeholderText: "Nazwisko"
 
                 onTextChanged: {
-                    btnAdd.enabled = Student.checkEmpty();
+                    btnAdd.enabled = Student.notEmpty();
+                }
+
+                Keys.onReturnPressed: {
+                    cardId.focus = true;
                 }
             }
         }
@@ -63,7 +71,14 @@ Window {
                 placeholderText: "Numer karty bibliotecznej"
 
                 onTextChanged: {
-                    btnAdd.enabled = Student.checkEmpty();
+                    btnAdd.enabled = Student.notEmpty();
+                }
+
+                Keys.onReturnPressed: {
+                    if (Student.notEmpty()) {
+                        Student.add();
+                        addStudentWindow.visible = false
+                    }
                 }
             }
         }
@@ -87,15 +102,20 @@ Window {
 
                 onClicked: {
                     Student.add();
-                    addStudentWindow.visible = false
+                    addStudentWindow.visible = false;
                 }
             }
         }
     }
 
     onVisibleChanged: {
+        firstName.focus = true;
+
         firstName.text = "";
         lastName.text = "";
         cardId.text = "";
+
+        Student.setInput(nameField.text);
+        nameField.text = "";
     }
 }
