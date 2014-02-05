@@ -33,6 +33,10 @@ Window {
 
                 focus: true
                 placeholderText: "Imię"
+
+                onTextChanged: {
+                    btnAdd.enabled = Student.checkEmpty();
+                }
             }
 
             TextField {
@@ -41,6 +45,10 @@ Window {
                 Layout.fillWidth: true
 
                 placeholderText: "Nazwisko"
+
+                onTextChanged: {
+                    btnAdd.enabled = Student.checkEmpty();
+                }
             }
         }
 
@@ -53,6 +61,10 @@ Window {
                 Layout.fillWidth: true
 
                 placeholderText: "Numer karty bibliotecznej"
+
+                onTextChanged: {
+                    btnAdd.enabled = Student.checkEmpty();
+                }
             }
         }
 
@@ -67,7 +79,11 @@ Window {
                 }
             }
             Button {
+                id: btnAdd
+
                 text: "Dodaj"
+
+                enabled: false
 
                 onClicked: {
                     Student.add();
@@ -75,5 +91,11 @@ Window {
                 }
             }
         }
+    }
+
+    onVisibleChanged: {
+        firstName.text = "";
+        lastName.text = "";
+        cardId.text = "";
     }
 }

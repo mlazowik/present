@@ -10,18 +10,24 @@ ApplicationWindow {
 
     title: "Obecność"
 
-    Component.onCompleted: {
-        Storage.initalize();
-        title += " (sqlite " + Storage.getDatabaseVersion() + ")";
-
-        mainTable.updateStudents();
-    }
-
     width: 500
     height: 400
 
     minimumHeight: 200
     minimumWidth: 400
+
+    MenuBar {
+        Menu {
+            title: "Plik"
+            MenuItem {
+                text: "O programie"
+
+                onTriggered: {
+                    aboutWindow.visible = true;
+                }
+            }
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -88,5 +94,14 @@ ApplicationWindow {
 
     Modals.AddStudent {
         id: addStudentWindow
+    }
+
+    Modals.About {
+        id: aboutWindow
+    }
+
+    Component.onCompleted: {
+        Storage.initalize();
+        mainTable.updateStudents();
     }
 }

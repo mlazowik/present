@@ -14,27 +14,10 @@ function add() {
     }
 }
 
-/*
-function add(db) {
-    try {
-        db.transaction(
-            function(tx) {
-                tx.executeSql(
-                    "INSERT INTO students(first_name, last_name, card_id) \
-                    VALUES(" +
-                    firstName + ", " +
-                    lastName + ", " +
-                    cardId +
-                    ")"
-                );
-            }
-        )
-    } catch (err) {
-        console.log("Error adding student: " + err);
-
-        return -1;
-    };
-
-    return db;
+function checkEmpty() {
+    return (
+        firstName.text !== ""
+        && lastName.text !== ""
+        && cardId.text !== ""
+    );
 }
-*/
