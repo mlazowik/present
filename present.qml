@@ -10,11 +10,11 @@ ApplicationWindow {
 
     title: "Obecność"
 
-    width: 500
+    width: 700
     height: 400
 
     minimumHeight: 200
-    minimumWidth: 400
+    minimumWidth: 700
 
     MenuBar {
         Menu {
@@ -29,76 +29,162 @@ ApplicationWindow {
         }
     }
 
-    ColumnLayout {
+    RowLayout {
         anchors.fill: parent
         anchors.margins: 10
 
-        spacing: 10
+        ColumnLayout {
+            //spacing: 10
 
-        TableView {
-            id: mainTable
+            TableView {
+                id: presentStudentsTable
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            TableViewColumn {
-                role: "firstName"
-                title: "Imię"
+                TableViewColumn {
+                    role: "firstName"
+                    title: "Imię"
 
-                width: 100
+                    width: 100
+                }
+
+                TableViewColumn {
+                    role: "lastName"
+                    title: "Nazwisko"
+
+                    width: 100
+                }
+
+                TableViewColumn {
+                    role: "cardId"
+                    title: "Identyfikator"
+                }
+
+                model: ListModel {
+                    id: presentStudentsList
+                }
+
+                function updatePresentStudents() {
+                    var presentStudents = Storage.getPresentStudents();
+
+                    presentStudentsList.clear();
+                    for (var i = 0; i < presentStudents.length; i++) {
+                        presentStudentsList.append(presentStudents[i]);
+                    }
+                }
             }
 
-            TableViewColumn {
-                role: "lastName"
-                title: "Nazwisko"
+            TextField {
+                id: namePresentField
 
-                width: 150
-            }
+                Layout.fillWidth: true
 
-            TableViewColumn {
-                role: "cardId"
-                title: "Identyfikator"
-            }
-
-            model: ListModel {
-                id: studentsList
-            }
-
-            function updateStudents() {
-                var students = Storage.getStudents();
-
-                studentsList.clear();
-                for (var i = 0; i < students.length; i++) {
-                    studentsList.append(students[i]);
+                Keys.onReturnPressed: {
                 }
             }
         }
 
-        RowLayout {
-            Layout.fillWidth: true
+        ColumnLayout {
+            Button {
+                id: btnEnters
 
-            TextField {
-                id: nameField
+                text: "<-"
 
-                Layout.fillWidth: true
-                focus: true
-
-                Keys.onReturnPressed: {
-                    addStudentWindow.visible = true;
+                onClicked: {
+                    studentsTable.studentEnters();
                 }
             }
 
             Button {
-                id: btnAdd
+                id: btnLeaves
 
-                text: "Dodaj"
+                text: "->"
 
                 onClicked: {
                     addStudentWindow.visible = true;
                 }
             }
         }
+
+        ColumnLayout {
+            //spacing: 10
+
+            TableView {
+                id: studentsTable
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                TableViewColumn {
+                    role: "firstName"
+                    title: "Imię"
+
+                    width: 100
+                }
+
+                TableViewColumn {
+                    role: "lastName"
+                    title: "Nazwisko"
+
+                    width: 100
+                }
+
+                TableViewColumn {
+                    role: "cardId"
+                    title: "Identyfikator"
+                }
+
+                model: ListModel {
+                    id: studentsList
+                }
+
+                function updateStudents() {
+                    var students = Storage.getStudents();
+
+                    studentsList.clear();
+                    for (var i = 0; i < students.length; i++) {
+                        studentsList.append(students[i]);
+                    }
+                }
+
+                function studentEnters() {
+                    if (currentRow !== -1) {
+                        Storage.logStudentAction(
+                            studentsList.get(currentRow).studentId,
+                            1
+                        );
+
+                        presentStudentsTable.updatePresentStudents();
+                    }
+                }
+            }
+
+            TextField {
+                id: nameField
+
+                Layout.fillWidth: true
+
+                Keys.onReturnPressed: {
+                }
+            }
+        }
     }
+
+
+    /*
+
+    Button {
+        id: btnAdd
+
+        text: "Dodaj"
+
+        onClicked: {
+            addStudentWindow.visible = true;
+        }
+    }
+
+    */
 
     Modals.AddStudent {
         id: addStudentWindow
@@ -110,6 +196,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         Storage.initalize();
-        mainTable.updateStudents();
+        studentsTable.updateStudents();
+        presentStudentsTable.updatePresentStudents();
     }
 }

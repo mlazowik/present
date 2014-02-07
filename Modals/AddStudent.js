@@ -15,7 +15,7 @@ function add() {
     if (res !== 0) {
         console.log("Error adding student: " + res);
     } else {
-        mainTable.updateStudents();
+        studentsTable.updateStudents();
     }
 }
 

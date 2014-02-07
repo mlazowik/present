@@ -2,19 +2,19 @@
 
 var scheme_students =
     "CREATE TABLE IF NOT EXISTS students( \
-        id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
-        firstName      TEXT NOT NULL, \
-        lastName       TEXT NOT NULL, \
-        cardId         TEXT, \
-        otherIds       TEXT \
+        studentId       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
+        firstName       TEXT NOT NULL, \
+        lastName        TEXT NOT NULL, \
+        cardId          TEXT, \
+        otherIds        TEXT \
     );"
 var scheme_log =
     "CREATE TABLE IF NOT EXISTS log( \
         id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
         timestamp       DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, \
-        studentId      INTEGER NOT NULL, \
-        action          INTEGER NOT NULL, /* 1 - enter, -1 - leave */ \
-        FOREIGN KEY(studentId) REFERENCES students(id) \
+        studentId       INTEGER NOT NULL, \
+        action          INTEGER NOT NULL, \
+        FOREIGN KEY(studentId) REFERENCES students(studentId) \
     );"
 
 function getDatabase() {
@@ -98,19 +98,12 @@ function addStudent(firstName, lastName, cardId) {
     try {
         db.transaction(
             function(tx) {
-                tx.executeSql(
+                var res = tx.executeSql(
                     "INSERT INTO students(firstName, lastName, cardId) VALUES(?, ?, ?)",
                     [firstName, lastName, cardId]
                 );
 
-                console.log(
-                            "INSERT INTO students(firstName, lastName, cardId) " +
-                            "VALUES(" +
-                                "'" + firstName + "', " +
-                                "'" + lastName + "', " +
-                                "'" + cardId + "'" +
-                            ")"
-                );
+                console.log(res.rows);
             }
         )
     } catch (err) {
@@ -140,4 +133,55 @@ function getStudents() {
     };
 
     return students;
+}
+
+function getPresentStudents() {
+    var db = getDatabase();
+    var students = new Array();
+
+    try {
+        db.transaction(
+            function(tx) {
+                var result = tx.executeSql(
+                    "SELECT * FROM students AS s " +
+                    "INNER JOIN (SELECT * FROM (SELECT * FROM log ORDER BY timestamp) GROUP BY studentId) AS p " +
+                    "ON s.studentId = p.studentId"
+                );
+
+                console.log("Getting present");
+                console.log(JSON.stringify(result.rows));
+
+                for (var i = 0; i < result.rows.length; i++) {
+                    if (result.rows.item(i)['action'] === '1') {
+                        students[i] = result.rows.item(i);
+                        console.log(JSON.stringify(students[i]));
+                    }
+                }
+            }
+        )
+    } catch (err) {
+        console.log("Error getting present students: " + err);
+    };
+
+    return students;
+}
+
+function logStudentAction(studentId, action) {
+    var db = getDatabase();
+
+    try {
+        db.transaction(
+            function(tx) {
+                var res = tx.executeSql(
+                    "INSERT INTO log(studentId, action) VALUES(?, ?)",
+                    [studentId, action]
+                );
+
+                console.log("adding student as present");
+                console.log(JSON.stringify(res.rows));
+            }
+        )
+    } catch (err) {
+        console.log("Error logging student action: " + err);
+    };
 }
