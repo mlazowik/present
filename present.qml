@@ -19,6 +19,17 @@ ApplicationWindow {
     MenuBar {
         Menu {
             title: "Plik"
+
+            MenuItem {
+                text: "Dodaj ucznia"
+
+                onTriggered: {
+                    addStudentWindow.visible = true;
+                }
+            }
+
+            MenuSeparator {}
+
             MenuItem {
                 text: "O programie"
 
@@ -29,162 +40,220 @@ ApplicationWindow {
         }
     }
 
-    RowLayout {
+    ColumnLayout{
         anchors.fill: parent
         anchors.margins: 10
 
-        ColumnLayout {
-            //spacing: 10
+        spacing: 10
 
-            TableView {
-                id: presentStudentsTable
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            ColumnLayout {
+                spacing: 10
 
-                TableViewColumn {
-                    role: "firstName"
-                    title: "Imię"
+                Text {
+                    id: studentsHeader
 
-                    width: 100
+                    Layout.fillWidth: true
+
+                    text: "<strong>Poza biblioteką</strong>"
+
+                    horizontalAlignment: Text.AlignHCenter
                 }
 
-                TableViewColumn {
-                    role: "lastName"
-                    title: "Nazwisko"
+                TableView {
+                    id: studentsTable
 
-                    width: 100
-                }
+                    property var students
 
-                TableViewColumn {
-                    role: "cardId"
-                    title: "Identyfikator"
-                }
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                model: ListModel {
-                    id: presentStudentsList
-                }
+                    TableViewColumn {
+                        role: "firstName"
+                        title: "Imię"
 
-                function updatePresentStudents() {
-                    var presentStudents = Storage.getPresentStudents();
+                        width: 100
+                    }
 
-                    presentStudentsList.clear();
-                    for (var i = 0; i < presentStudents.length; i++) {
-                        presentStudentsList.append(presentStudents[i]);
+                    TableViewColumn {
+                        role: "lastName"
+                        title: "Nazwisko"
+
+                        width: 100
+                    }
+
+                    TableViewColumn {
+                        role: "cardId"
+                        title: "Identyfikator"
+                    }
+
+                    model: ListModel {
+                        id: studentsList
+                    }
+
+                    function updateStudents() {
+                        students = Storage.getStudents();
+
+                        updateStudentsList();
+                    }
+
+                    function updateStudentsList() {
+                        studentsList.clear();
+
+                        var filter = searchField.text;
+                        for (var i = 0; i < students.length; i++) {
+                            if (filter === "" || studentMatches(students[i], filter)) {
+                                studentsList.append(students[i]);
+                            }
+                        }
+                    }
+
+                    function studentEnters() {
+                        if (currentRow !== -1) {
+                            Storage.logStudentAction(
+                                studentsList.get(currentRow).studentId,
+                                1
+                            );
+
+                            presentStudentsTable.updatePresentStudents();
+                            studentsTable.updateStudents();
+                        }
+                    }
+
+                    onDoubleClicked: {
+                        studentEnters();
                     }
                 }
             }
 
-            TextField {
-                id: namePresentField
+            ColumnLayout {
+                spacing: 10
 
-                Layout.fillWidth: true
+                /*Button {
+                id: btnAdd
 
-                Keys.onReturnPressed: {
-                }
-            }
-        }
-
-        ColumnLayout {
-            Button {
-                id: btnEnters
-
-                text: "<-"
-
-                onClicked: {
-                    studentsTable.studentEnters();
-                }
-            }
-
-            Button {
-                id: btnLeaves
-
-                text: "->"
+                text: "Dodaj"
 
                 onClicked: {
                     addStudentWindow.visible = true;
                 }
-            }
-        }
+            }*/
 
-        ColumnLayout {
-            //spacing: 10
+                Button {
+                    id: btnEnters
 
-            TableView {
-                id: studentsTable
+                    text: "->"
 
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                TableViewColumn {
-                    role: "firstName"
-                    title: "Imię"
-
-                    width: 100
-                }
-
-                TableViewColumn {
-                    role: "lastName"
-                    title: "Nazwisko"
-
-                    width: 100
-                }
-
-                TableViewColumn {
-                    role: "cardId"
-                    title: "Identyfikator"
-                }
-
-                model: ListModel {
-                    id: studentsList
-                }
-
-                function updateStudents() {
-                    var students = Storage.getStudents();
-
-                    studentsList.clear();
-                    for (var i = 0; i < students.length; i++) {
-                        studentsList.append(students[i]);
+                    onClicked: {
+                        studentsTable.studentEnters();
                     }
                 }
 
-                function studentEnters() {
-                    if (currentRow !== -1) {
-                        Storage.logStudentAction(
-                            studentsList.get(currentRow).studentId,
-                            1
-                        );
+                Button {
+                    id: btnLeaves
 
-                        presentStudentsTable.updatePresentStudents();
+                    text: "<-"
+
+                    onClicked: {
+                        presentStudentsTable.studentLeaves();
                     }
                 }
             }
 
-            TextField {
-                id: nameField
+            ColumnLayout {
+                spacing: 10
 
-                Layout.fillWidth: true
+                Text {
+                    id: presentStudentsHeader
 
-                Keys.onReturnPressed: {
+                    Layout.fillWidth: true
+
+                    text: "<strong>Obecni</strong>"
+
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                TableView {
+                    id: presentStudentsTable
+
+                    property var presentStudents
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    TableViewColumn {
+                        role: "firstName"
+                        title: "Imię"
+
+                        width: 100
+                    }
+
+                    TableViewColumn {
+                        role: "lastName"
+                        title: "Nazwisko"
+
+                        width: 100
+                    }
+
+                    TableViewColumn {
+                        role: "cardId"
+                        title: "Identyfikator"
+                    }
+
+                    model: ListModel {
+                        id: presentStudentsList
+                    }
+
+                    function updatePresentStudents() {
+                        presentStudents = Storage.getPresentStudents();
+
+                        updatePresentStudentsList();
+                    }
+
+                    function updatePresentStudentsList() {
+                        presentStudentsList.clear();
+
+                        var filter = searchField.text;
+                        for (var i = 0; i < presentStudents.length; i++) {
+                            if (filter === "" || studentMatches(presentStudents[i], filter)) {
+                                presentStudentsList.append(presentStudents[i]);
+                            }
+                        }
+                    }
+
+                    function studentLeaves() {
+                        if (currentRow !== -1) {
+                            Storage.logStudentAction(
+                                        presentStudentsList.get(currentRow).studentId,
+                                        -1
+                                        );
+
+                            presentStudentsTable.updatePresentStudents();
+                            studentsTable.updateStudents();
+                        }
+                    }
+
+                    onDoubleClicked: {
+                        studentLeaves();
+                    }
                 }
             }
         }
-    }
 
+        TextField {
+            id: searchField
 
-    /*
+            Layout.fillWidth: true
 
-    Button {
-        id: btnAdd
-
-        text: "Dodaj"
-
-        onClicked: {
-            addStudentWindow.visible = true;
+            onTextChanged: {
+                studentsTable.updateStudentsList();
+                presentStudentsTable.updatePresentStudentsList();
+            }
         }
     }
-
-    */
 
     Modals.AddStudent {
         id: addStudentWindow
@@ -198,5 +267,14 @@ ApplicationWindow {
         Storage.initalize();
         studentsTable.updateStudents();
         presentStudentsTable.updatePresentStudents();
+    }
+
+    function studentMatches(student, filter) {
+        filter = filter.toLowerCase();
+
+        return student["firstName"].toLowerCase().search(filter) !== -1
+            || student["lastName"].toLowerCase().search(filter) !== -1
+            || (student["cardId"] !== null && student["cardId"].toLowerCase().search(filter) !== -1)
+            || (student["otherIds"] !== null && student["otherIds"].toLowerCase().search(filter) !== -1);
     }
 }

@@ -80,9 +80,9 @@ function initalize() {
 
                 var tables = tx.executeSql("SELECT * FROM sqlite_master WHERE type='table';");
 
-                for (var i = 0; i < tables.rows.length; i++) {
+                /*for (var i = 0; i < tables.rows.length; i++) {
                     console.log(JSON.stringify(tables.rows.item(i)));
-                }
+                }*/
             }
         )
 
@@ -103,7 +103,7 @@ function addStudent(firstName, lastName, cardId) {
                     [firstName, lastName, cardId]
                 );
 
-                console.log(res.rows);
+                //console.log(res.rows);
             }
         )
     } catch (err) {
@@ -116,6 +116,15 @@ function addStudent(firstName, lastName, cardId) {
 function getStudents() {
     var db = getDatabase();
     var students = new Array();
+    var presentStudents = new Array();
+    var isPresent = new Array();
+    var j = 0;
+
+    presentStudents = getPresentStudents();
+
+    for (var i = 0; i < presentStudents.length; i++) {
+        isPresent[presentStudents[i]["studentId"]] = true;
+    }
 
     try {
         db.transaction(
@@ -123,8 +132,11 @@ function getStudents() {
                 var result = tx.executeSql("SELECT * FROM students");
 
                 for (var i = 0; i < result.rows.length; i++) {
-                    students[i] = result.rows.item(i);
-                    console.log(JSON.stringify(students[i]));
+                    if (isPresent[result.rows.item(i)["studentId"]] !== true) {
+                        students[j] = result.rows.item(i);
+                        j++;
+                        //console.log(JSON.stringify(students[i]));
+                    }
                 }
             }
         )
@@ -138,23 +150,24 @@ function getStudents() {
 function getPresentStudents() {
     var db = getDatabase();
     var students = new Array();
+    var j = 0;
 
     try {
         db.transaction(
             function(tx) {
-                var result = tx.executeSql(
+                var res = tx.executeSql(
                     "SELECT * FROM students AS s " +
                     "INNER JOIN (SELECT * FROM (SELECT * FROM log ORDER BY timestamp) GROUP BY studentId) AS p " +
                     "ON s.studentId = p.studentId"
                 );
 
                 console.log("Getting present");
-                console.log(JSON.stringify(result.rows));
 
-                for (var i = 0; i < result.rows.length; i++) {
-                    if (result.rows.item(i)['action'] === '1') {
-                        students[i] = result.rows.item(i);
-                        console.log(JSON.stringify(students[i]));
+                for (var i = 0; i < res.rows.length; i++) {
+                    if (res.rows.item(i)['action'] === 1) {
+                        students[j] = res.rows.item(i);
+                        j++;
+                        //console.log(JSON.stringify(students[i]));
                     }
                 }
             }
@@ -178,7 +191,6 @@ function logStudentAction(studentId, action) {
                 );
 
                 console.log("adding student as present");
-                console.log(JSON.stringify(res.rows));
             }
         )
     } catch (err) {
