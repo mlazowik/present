@@ -270,6 +270,18 @@ ApplicationWindow {
     }
 
     function studentMatches(student, filter) {
+        var parts = filter.split(" ");
+
+        for (var i = 0; i < parts.length; i++) {
+            if (parts[i] !== '' && !studentMatchesSingle(student, parts[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function studentMatchesSingle(student, filter) {
         filter = filter.toLowerCase();
 
         return student["firstName"].toLowerCase().search(filter) !== -1
