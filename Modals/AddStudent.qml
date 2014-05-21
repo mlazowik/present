@@ -115,7 +115,7 @@ Window {
         lastName.text = "";
         cardId.text = "";
 
-        Student.setInput(nameField.text);
-        nameField.text = "";
+        //Student.setInput(searchField.text);
+        //searchField.text = "";
     }
 }
