@@ -38,7 +38,7 @@ Window {
             Text {
                 Layout.alignment: Qt.AlignHCenter
 
-                text: "wersja 0.1"
+                text: "wersja 0.1-dev"
 
                 color: "#888888"
                 font.pixelSize: 12
@@ -56,13 +56,6 @@ Window {
 
                 text: "Wersja SQLite: " + Storage.getDatabaseVersion()
             }
-            Text {
-                id: gitRevision
-
-                Layout.alignment: Qt.AlignHCenter
-
-                text: "Rewizja: "
-            }
         }
 
         Text {
@@ -74,18 +67,5 @@ Window {
                 Qt.openUrlExternally(link);
             }
         }
-    }
-
-    Component.onCompleted: {
-        var xhr = new XMLHttpRequest;
-
-        xhr.open("GET", "../.git-hash");
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                gitRevision.text += xhr.responseText;
-            }
-        }
-
-        xhr.send();
     }
 }

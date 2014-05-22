@@ -132,16 +132,6 @@ ApplicationWindow {
             ColumnLayout {
                 spacing: 10
 
-                /*Button {
-                id: btnAdd
-
-                text: "Dodaj"
-
-                onClicked: {
-                    addStudentWindow.visible = true;
-                }
-            }*/
-
                 Button {
                     id: btnEnters
 

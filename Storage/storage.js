@@ -43,8 +43,6 @@ function getDatabaseVersion() {
             function(tx) {
                 sqliteVersion = tx.executeSql('SELECT sqlite_version();');
                 sqliteVersion = sqliteVersion.rows.item(0)["sqlite_version()"];
-
-                console.log("sqlite version: " + sqliteVersion);
             }
         )
     } catch (err) {
@@ -61,8 +59,6 @@ function initalize() {
         db.transaction(
             function(tx) {
                 tx.executeSql('PRAGMA foreign_keys = ON;');
-
-                console.log("Foreign keys enabled")
             }
         )
     } catch (err) {
@@ -72,21 +68,10 @@ function initalize() {
     try {
         db.transaction(
             function(tx) {
-                //tx.executeSql("DROP TABLE IF EXISTS students;");
-                //tx.executeSql("DROP TABLE IF EXISTS log;");
-
                 tx.executeSql(scheme_students);
                 tx.executeSql(scheme_log);
-
-                var tables = tx.executeSql("SELECT * FROM sqlite_master WHERE type='table';");
-
-                /*for (var i = 0; i < tables.rows.length; i++) {
-                    console.log(JSON.stringify(tables.rows.item(i)));
-                }*/
             }
         )
-
-        console.log("Tables created.");
     } catch (err) {
         console.log("Error creating table in database: " + err);
     };
@@ -102,8 +87,6 @@ function addStudent(firstName, lastName, cardId) {
                     "INSERT INTO students(firstName, lastName, cardId) VALUES(?, ?, ?)",
                     [firstName, lastName, cardId]
                 );
-
-                //console.log(res.rows);
             }
         )
     } catch (err) {
@@ -115,9 +98,9 @@ function addStudent(firstName, lastName, cardId) {
 
 function getStudents() {
     var db = getDatabase();
-    var students = new Array();
-    var presentStudents = new Array();
-    var isPresent = new Array();
+    var students = [];
+    var presentStudents = [];
+    var isPresent = [];
     var j = 0;
 
     presentStudents = getPresentStudents();
@@ -135,7 +118,6 @@ function getStudents() {
                     if (isPresent[result.rows.item(i)["studentId"]] !== true) {
                         students[j] = result.rows.item(i);
                         j++;
-                        //console.log(JSON.stringify(students[i]));
                     }
                 }
             }
@@ -161,13 +143,10 @@ function getPresentStudents() {
                     "ON s.studentId = p.studentId"
                 );
 
-                console.log("Getting present");
-
                 for (var i = 0; i < res.rows.length; i++) {
                     if (res.rows.item(i)['action'] === 1) {
                         students[j] = res.rows.item(i);
                         j++;
-                        //console.log(JSON.stringify(students[i]));
                     }
                 }
             }
@@ -189,8 +168,6 @@ function logStudentAction(studentId, action) {
                     "INSERT INTO log(studentId, action) VALUES(?, ?)",
                     [studentId, action]
                 );
-
-                console.log("adding student as present");
             }
         )
     } catch (err) {
