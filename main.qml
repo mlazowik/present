@@ -8,6 +8,8 @@ import "Modals" as Modals
 ApplicationWindow {
     id: root
 
+    visible: true
+
     title: "Obecność"
 
     width: 700

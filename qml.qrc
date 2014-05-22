@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Storage/storage.js</file>
+        <file>Modals/About.qml</file>
+        <file>Modals/AddStudent.js</file>
+        <file>Modals/AddStudent.qml</file>
+    </qresource>
+</RCC>
