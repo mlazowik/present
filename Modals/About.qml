@@ -38,7 +38,7 @@ Window {
             Text {
                 Layout.alignment: Qt.AlignHCenter
 
-                text: "wersja 0.1-dev"
+                text: "wersja 0.1.0-dev"
 
                 color: "#888888"
                 font.pixelSize: 12
