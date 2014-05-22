@@ -18,7 +18,7 @@ ApplicationWindow {
     minimumHeight: 200
     minimumWidth: 700
 
-    MenuBar {
+    menuBar: MenuBar {
         Menu {
             title: "Plik"
 
