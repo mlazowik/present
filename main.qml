@@ -276,9 +276,9 @@ ApplicationWindow {
     function studentMatchesSingle(student, filter) {
         filter = filter.toLowerCase();
 
-        return student["firstName"].toLowerCase().search(filter) !== -1
-            || student["lastName"].toLowerCase().search(filter) !== -1
-            || (student["cardId"] !== null && student["cardId"].toLowerCase().search(filter) !== -1)
-            || (student["otherIds"] !== null && student["otherIds"].toLowerCase().search(filter) !== -1);
+        return student["firstName"].toLowerCase().search(filter) === 0
+            || student["lastName"].toLowerCase().search(filter) === 0
+            || (student["cardId"] !== null && student["cardId"].toLowerCase().search(filter) === 0)
+            || (student["otherIds"] !== null && student["otherIds"].toLowerCase().search(filter) === 0);
     }
 }
