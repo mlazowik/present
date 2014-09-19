@@ -90,10 +90,29 @@ function addStudent(firstName, lastName, cardId) {
             }
         )
     } catch (err) {
-        return err;
+        console.log("Error adding student: " + err);
     };
 
     return 0;
+}
+
+function editStudent(studentId, firstName, lastName, cardId) {
+    var db = getDatabase();
+
+    try {
+        db.transaction(
+            function(tx) {
+                var res = tx.executeSql(
+                    "UPDATE students " +
+                    "SET firstName = ?, lastName = ?, cardId = ? " +
+                    "WHERE studentId = ?",
+                    [firstName, lastName, cardId, studentId]
+                );
+            }
+        )
+    } catch (err) {
+        console.log("Error editing student: " + err);
+    };
 }
 
 function getStudents() {
@@ -131,7 +150,7 @@ function getStudents() {
 
 function getPresentStudents() {
     var db = getDatabase();
-    var students = new Array();
+    var students = [];
     var j = 0;
 
     try {

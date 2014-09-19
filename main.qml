@@ -26,7 +26,7 @@ ApplicationWindow {
                 text: "Dodaj ucznia"
 
                 onTriggered: {
-                    addStudentWindow.visible = true;
+                    studentWindow.visible = true;
                 }
             }
 
@@ -126,7 +126,7 @@ ApplicationWindow {
                     }
 
                     onDoubleClicked: {
-                        studentEnters();
+                        showStudent(studentsList.get(currentRow));
                     }
                 }
             }
@@ -219,9 +219,9 @@ ApplicationWindow {
                     function studentLeaves() {
                         if (currentRow !== -1) {
                             Storage.logStudentAction(
-                                        presentStudentsList.get(currentRow).studentId,
-                                        -1
-                                        );
+                                presentStudentsList.get(currentRow).studentId,
+                                -1
+                            );
 
                             presentStudentsTable.updatePresentStudents();
                             studentsTable.updateStudents();
@@ -229,7 +229,7 @@ ApplicationWindow {
                     }
 
                     onDoubleClicked: {
-                        studentLeaves();
+                        showStudent(presentStudentsList.get(currentRow));
                     }
                 }
             }
@@ -247,8 +247,8 @@ ApplicationWindow {
         }
     }
 
-    Modals.AddStudent {
-        id: addStudentWindow
+    Modals.Student {
+        id: studentWindow
     }
 
     Modals.About {
@@ -259,6 +259,11 @@ ApplicationWindow {
         Storage.initalize();
         studentsTable.updateStudents();
         presentStudentsTable.updatePresentStudents();
+    }
+
+    function showStudent(student) {
+        studentWindow.visible = true;
+        studentWindow.setData(student);
     }
 
     function studentMatches(student, filter) {

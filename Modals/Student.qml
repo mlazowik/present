@@ -4,10 +4,12 @@ import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
 
 import "../Storage/storage.js" as Storage
-import "AddStudent.js" as Student
+import "Student.js" as Student
 
 Window {
-    id: addStudentWindow
+    id: studentWindow
+
+    property int studentId: -1;
 
     flags: Qt.Dialog
 
@@ -39,7 +41,7 @@ Window {
                 }
 
                 Keys.onReturnPressed: {
-                    lastName.focus = true;
+                    saveIfNotEmpty();
                 }
             }
 
@@ -55,7 +57,7 @@ Window {
                 }
 
                 Keys.onReturnPressed: {
-                    cardId.focus = true;
+                    saveIfNotEmpty();
                 }
             }
         }
@@ -75,10 +77,7 @@ Window {
                 }
 
                 Keys.onReturnPressed: {
-                    if (Student.notEmpty()) {
-                        Student.add();
-                        addStudentWindow.visible = false
-                    }
+                    saveIfNotEmpty();
                 }
             }
         }
@@ -90,19 +89,18 @@ Window {
                 text: "Anuluj"
 
                 onClicked: {
-                    addStudentWindow.visible = false
+                    studentWindow.visible = false
                 }
             }
             Button {
                 id: btnAdd
 
-                text: "Dodaj"
+                text: "Zapisz"
 
                 enabled: false
 
                 onClicked: {
-                    Student.add();
-                    addStudentWindow.visible = false;
+                    saveIfNotEmpty();
                 }
             }
         }
@@ -115,7 +113,23 @@ Window {
         lastName.text = "";
         cardId.text = "";
 
+        studentId = -1;
+
         //Student.setInput(searchField.text);
         //searchField.text = "";
+    }
+
+    function setData(student) {
+        studentId = student.studentId;
+        firstName.text = student.firstName;
+        lastName.text = student.lastName;
+        cardId.text = student.cardId;
+    }
+
+    function saveIfNotEmpty() {
+        if (Student.notEmpty()) {
+            Student.save(studentId);
+            studentWindow.visible = false;
+        }
     }
 }

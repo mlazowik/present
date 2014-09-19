@@ -1,22 +1,30 @@
 .import "../Storage/storage.js" as Storage
 
-function add() {
+function save(id) {
     if (notEmpty() === false) {
         console.log("At least one field is empty. This shouldn't happen.")
         return;
     }
 
-    var res = Storage.addStudent(
-        firstName.text,
-        lastName.text,
-        cardId.text
-    );
+    var res = 0;
 
-    if (res !== 0) {
-        console.log("Error adding student: " + res);
+    if (id === -1) {
+        Storage.addStudent(
+            firstName.text,
+            lastName.text,
+            cardId.text
+        );
     } else {
-        studentsTable.updateStudents();
+        Storage.editStudent(
+            id,
+            firstName.text,
+            lastName.text,
+            cardId.text
+        );
     }
+
+    studentsTable.updateStudents();
+    presentStudentsTable.updatePresentStudents();
 }
 
 function notEmpty() {
