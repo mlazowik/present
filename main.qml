@@ -128,6 +128,10 @@ ApplicationWindow {
                     onDoubleClicked: {
                         showStudent(studentsList.get(currentRow));
                     }
+
+                    Keys.onReturnPressed: {
+                        studentsTable.studentEnters();
+                    }
                 }
             }
 
@@ -230,6 +234,10 @@ ApplicationWindow {
 
                     onDoubleClicked: {
                         showStudent(presentStudentsList.get(currentRow));
+                    }
+
+                    Keys.onReturnPressed: {
+                        presentStudentsTable.studentLeaves();
                     }
                 }
             }
